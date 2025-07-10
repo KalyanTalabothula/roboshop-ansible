@@ -60,5 +60,5 @@
     register: product_count 
 
   - name: print the count
-    ansible.builtin.debeg:
+    ansible.builtin.debug:
       meg: "product count : {{product_count}}"
