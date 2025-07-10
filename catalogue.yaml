@@ -54,5 +54,11 @@
     ansible.builtin.package:
       name: mongodb-org
       state: present
-
   
+  - name: Get the categories count
+    ansible.builtin.command: mongo --host mongodb.kalyanu.xyz --quiet --eval "db = db.getSiblingDB('catalogue'); db.product.count()"
+      register: product_count 
+
+  - name: print the count
+    ansible.builtin.debeg:
+      meg: "product count :{{product_count}}"
