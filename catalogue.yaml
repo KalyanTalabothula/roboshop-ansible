@@ -61,4 +61,4 @@
 
   - name: print the count
     ansible.builtin.debeg:
-      meg: "product count :{{product_count}}"
+      meg: "product count : {{product_count}}"
