@@ -15,7 +15,7 @@
     ansible.builtin.replace:
       path: /etc/redis/redis.conf
       regexp: '127.0.0.1'
-      repalce: '0.0.0.0'
+      replace: '0.0.0.0'
   
   - name: Update protected-mode in redis.conf
     lineinfile:
