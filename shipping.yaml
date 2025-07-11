@@ -76,8 +76,7 @@
         msg: "schema output: {{ schema.stdout }}"
 
     - name: Load cities schema if not exists
-      ansible.builtin.shell: >
-        mysql -h mysql.kalyanu.xyz -uroot -p{{ mysql_password }} < /app/schema/shipping.sql
+      ansible.builtin.shell: mysql -h mysql.kalyanu.xyz -uroot -p{{ mysql_password }} < /app/schema/shipping.sql
       when: schema.stdout != "1"
 
     - name: Start and enable shipping service
