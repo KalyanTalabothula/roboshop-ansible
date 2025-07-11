@@ -1,6 +1,6 @@
 
 - name: Creating redis database
-  host: redis
+  hosts: redis
   become: yes
   tasks:
   - name: By default redis 6 is available, We would like to enable 7 version and install list.
