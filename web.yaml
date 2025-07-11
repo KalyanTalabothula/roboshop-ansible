@@ -1,0 +1,48 @@
+- name: Setup web with Nginx for RoboShop
+  hosts: web
+  become: yes
+  tasks:
+
+  - name: Disable existing Nginx module
+    ansible.builtin.command: dnf module disable nginx -y
+
+  - name: Enable Nginx module version 1.24
+    ansible.builtin.command: dnf module enable nginx:1.24 -y
+
+  - name: Install Nginx web server
+    ansible.builtin.dnf:
+    name: nginx
+    state: present
+
+  - name: Enable and start Nginx
+    ansible.builtin.service:
+    name: nginx
+    state: started
+    enabled: yes
+
+  - name: Remove default web content
+    ansible.builtin.file:
+    path: /usr/share/nginx/html
+    state: absent
+
+  - name: Create web directory
+    ansible.builtin.file:
+      path: /usr/share/nginx/html
+      state: directory
+      mode: '0755'
+
+  - name: Download web content
+    ansible.builtin.get_url:
+      url: https://roboshop-artifacts.s3.amazonaws.com/web-v3.zip
+      dest: /tmp/web.zip
+
+  - name: Unzip web content
+    ansible.builtin.unarchive:
+      src: /tmp/web.zip
+      dest: /usr/share/nginx/html
+      remote_src: yes
+    
+  - name: Restart Nginx to apply config changes
+    ansible.builtin.service:
+      name: nginx
+      state: restarted
