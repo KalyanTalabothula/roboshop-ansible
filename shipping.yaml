@@ -2,6 +2,8 @@
 - name: creating shipping component
   hosts: shipping
   become: yes
+  vars:
+    mysql_password: RoboShop@1
   tasks:
   - name: Installing maven
     ansible.builtin.package:
@@ -52,13 +54,17 @@
       src: shipping.service
       dest: /etc/systemd/system/shipping.service
 
-  - name: daemon reload 
-    ansible:builtin.systemd_service:
-    daemon_reload: true
+  # - name: daemon reload 
+    # ansible:builtin.systemd_service:
+      # daemon_reload: true
+  
+  - name: Reload systemd daemon
+    ansible.builtin.systemd:
+        daemon_reload: yes
 
   - name: Install mysql client
     ansible.builtin.package:
-      name: install mysql
+      name: mysql
       state: present 
   
   - name: check cities schema exists or not
