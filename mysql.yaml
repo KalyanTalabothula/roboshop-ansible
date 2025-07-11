@@ -19,4 +19,7 @@
       state: started
 
   - name: setup root password
-    ansible.builtin.command: mysql_secure_installation --set-root-pass RoboShop@1
+    ansible.builtin.command: mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'RoboShop@1';"
+
+
+    # mysql_secure_installation --set-root-pass RoboShop@1
