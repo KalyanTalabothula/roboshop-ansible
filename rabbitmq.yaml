@@ -1,47 +1,50 @@
-
-
 - name: Installing rabbitmq server
   hosts: rabbitmq
   become: yes
 
   tasks:
-    - name: Enable EPEL repo
-      ansible.builtin.yum:
-        name: epel-release
-        state: present
 
-    - name: Install required dependencies
-      ansible.builtin.yum:
-        name:
-          - socat
-          - logrotate
-          - erlang
-        state: present
+  - name: Enable EPEL repo
+    ansible.builtin.yum:
+      name: epel-release
+      state: present
 
-    - name: Add RabbitMQ GPG key
-      ansible.builtin.rpm_key:
-        key: https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey
-        state: present
+  - name: Install required dependencies
+    ansible.builtin.yum:
+      name:
+        - socat
+        - logrotate
+        - erlang
+      state: present
 
-    - name: Install RabbitMQ server
-      ansible.builtin.yum:
-        name: rabbitmq-server
-        state: present
+  - name: Add RabbitMQ repo (compatible with EL8)
+    ansible.builtin.get_url:
+      url: https://packagecloud.io/rabbitmq/rabbitmq-server/packages/el/8/rabbitmq-server-3.8.16-1.el8.noarch.rpm/download.rpm
+      dest: /tmp/rabbitmq-server.rpm
 
-    - name: Start and enable RabbitMQ
-      ansible.builtin.service:
-        name: rabbitmq-server
-        state: started
-        enabled: yes
+  - name: Install RabbitMQ manually
+    ansible.builtin.yum:
+      name: /tmp/rabbitmq-server.rpm
+      state: present
 
-    - name: Add RabbitMQ user
-      ansible.builtin.command: rabbitmqctl add_user roboshop roboshop123
-      ignore_errors: yes
+  - name: Enable and start RabbitMQ
+    ansible.builtin.service:
+      name: rabbitmq-server
+      state: started
+      enabled: yes
 
-    - name: Set RabbitMQ user tags
-      ansible.builtin.command: rabbitmqctl set_user_tags roboshop administrator
-      ignore_errors: yes
+  - name: Enable RabbitMQ management UI
+    ansible.builtin.command: rabbitmq-plugins enable rabbitmq_management
+    register: plugin_output
+    changed_when: "'enabled' in plugin_output.stdout"
 
-    - name: Set permissions for roboshop user
-      ansible.builtin.command: rabbitmqctl set_permissions -p / roboshop ".*" ".*" ".*"
-      ignore_errors: yes
+  - name: Create RabbitMQ user
+    ansible.builtin.command: rabbitmqctl add_user roboshop roboshop123
+    args:
+      creates: /var/lib/rabbitmq/.user_created
+
+  - name: Set RabbitMQ user tags
+    ansible.builtin.command: rabbitmqctl set_user_tags roboshop administrator
+
+  - name: Set RabbitMQ permissions
+    ansible.builtin.command: rabbitmqctl set_permissions -p / roboshop ".*" ".*" ".*"
