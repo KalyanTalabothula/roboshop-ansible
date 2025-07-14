@@ -1,5 +1,5 @@
 - name: Setup web with Nginx for RoboShop
-  hosts: web
+  hosts: Web
   become: yes
   tasks:
   - name: Disable existing Nginx module
