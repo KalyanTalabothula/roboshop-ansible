@@ -21,12 +21,23 @@
       name: python3-PyMySQL
       state: present
 
+  # - name: Set MySQL root password
+  #   community.mysql.mysql_user:
+  #     name: root
+  #     host: localhost
+  #     password: "{{ mysql_root_password }}"
+  #     login_unix_socket: /var/lib/mysql/mysql.sock
+  #     check_implicit_admin: yes
+  #     priv: '*.*:ALL,GRANT'
+  #     state: present
+
   - name: Set MySQL root password
-    community.mysql.mysql_user:
-      name: root
-      host: localhost
-      password: "{{ mysql_root_password }}"
-      login_unix_socket: /var/lib/mysql/mysql.sock
-      check_implicit_admin: yes
-      priv: '*.*:ALL,GRANT'
-      state: present
+  community.mysql.mysql_user:
+    name: root
+    host: localhost
+    password: "RoboShop@1"
+    login_user: root
+    login_password: "RoboShop@1"
+    check_implicit_admin: true
+    state: present
+
