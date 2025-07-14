@@ -1,3 +1,80 @@
+
+- name: configure mysql component
+  hosts: mysql
+  become: yes
+  tasks:
+  - name: Install MySQL server
+    ansible.builtin.dnf:
+      name: mysql-server
+      state: present
+
+  - name: Start and enable MySQL service
+    ansible.builtin.service:
+      name: mysqld
+      state: started
+      enabled: yes
+
+  - name: Install MySQL Python driver
+    ansible.builtin.pip:
+      name: PyMySQL
+      executable: pip3
+
+  - name: Create root .my.cnf file with credentials
+    ansible.builtin.copy:
+      dest: /root/.my.cnf
+      content: |
+        [client]
+        user=root
+        password=RoboShop@1
+      mode: '0600'
+      owner: root
+      group: root
+
+  - name: Create shipping MySQL user with remote access
+    community.mysql.mysql_user:
+      name: shipping
+      password: RoboShop@1
+      host: '%'
+      priv: '*.*:ALL'
+      state: present
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # - name: configure mysql component
 #   hosts: mysql
 #   become: yes
@@ -23,9 +100,9 @@
 
 #   # - name: Set MySQL root password
 #   #   community.mysql.mysql_user:
-#   #     name: root
+#   #     name: root      
 #   #     host: localhost
-#   #     password: "{{ mysql_root_password }}"
+#   #     password: "{{ mysql_root_password }}"   some time version is like interactive with us like username, password, or database like this....
 #   #     login_unix_socket: /var/lib/mysql/mysql.sock
 #   #     check_implicit_admin: yes
 #   #     priv: '*.*:ALL,GRANT'
@@ -41,32 +118,32 @@
 #     check_implicit_admin: true
 #     state: present
 
-- name: configure mysql component
-  hosts: mysql
-  become: yes
-  tasks:
-  - name: Install MySQL server
-    ansible.builtin.dnf:
-      name: mysql-server
-      state: installed
+# - name: configure mysql component
+#   hosts: mysql
+#   become: yes
+#   tasks:
+#   - name: Install MySQL server
+#     ansible.builtin.dnf:
+#       name: mysql-server
+#       state: installed
 
-  - name: Start and enable MySQL service
-    ansible.builtin.service:
-      name: mysqld
-      state: started
-      enabled: yes
+#   - name: Start and enable MySQL service
+#     ansible.builtin.service:
+#       name: mysqld
+#       state: started
+#       enabled: yes
 
-  - name: Install MySQL Python driver
-    ansible.builtin.dnf:
-      name: python3-PyMySQL
-      state: present
+#   - name: Install MySQL Python driver
+#     ansible.builtin.dnf:
+#       name: python3-PyMySQL
+#       state: present
 
-  - name: Set MySQL root password
-    community.mysql.mysql_user:
-      name: root
-      host: localhost
-      password: "RoboShop@1"
-      login_user: root
-      login_password: "RoboShop@1"
-      check_implicit_admin: true
-      state: present
+#   - name: Set MySQL root password
+#     community.mysql.mysql_user:
+#       name: root
+#       host: localhost
+#       password: "RoboShop@1"
+#       login_user: root
+#       login_password: "RoboShop@1"
+#       check_implicit_admin: true
+#       state: present
