@@ -1,43 +1,72 @@
+# - name: configure mysql component
+#   hosts: mysql
+#   become: yes
+#   vars:
+#     mysql_root_password: RoboShop@1
+
+#   tasks:
+#   - name: Install MySQL server
+#     ansible.builtin.dnf:
+#       name: mysql-server
+#       state: present
+
+#   - name: Start and enable MySQL service
+#     ansible.builtin.service:
+#       name: mysqld
+#       state: started
+#       enabled: true
+
+#   - name: Install MySQL Python driver
+#     ansible.builtin.dnf:
+#       name: python3-PyMySQL
+#       state: present
+
+#   # - name: Set MySQL root password
+#   #   community.mysql.mysql_user:
+#   #     name: root
+#   #     host: localhost
+#   #     password: "{{ mysql_root_password }}"
+#   #     login_unix_socket: /var/lib/mysql/mysql.sock
+#   #     check_implicit_admin: yes
+#   #     priv: '*.*:ALL,GRANT'
+#   #     state: present
+
+#   - name: Set MySQL root password
+#   community.mysql.mysql_user:
+#     name: root
+#     host: localhost
+#     password: "RoboShop@1"
+#     login_user: root
+#     login_password: "RoboShop@1"
+#     check_implicit_admin: true
+#     state: present
+
 - name: configure mysql component
   hosts: mysql
   become: yes
-  vars:
-    mysql_root_password: RoboShop@1
-
   tasks:
   - name: Install MySQL server
     ansible.builtin.dnf:
       name: mysql-server
-      state: present
+      state: installed
 
   - name: Start and enable MySQL service
     ansible.builtin.service:
       name: mysqld
       state: started
-      enabled: true
+      enabled: yes
 
   - name: Install MySQL Python driver
     ansible.builtin.dnf:
       name: python3-PyMySQL
       state: present
 
-  # - name: Set MySQL root password
-  #   community.mysql.mysql_user:
-  #     name: root
-  #     host: localhost
-  #     password: "{{ mysql_root_password }}"
-  #     login_unix_socket: /var/lib/mysql/mysql.sock
-  #     check_implicit_admin: yes
-  #     priv: '*.*:ALL,GRANT'
-  #     state: present
-
   - name: Set MySQL root password
-  community.mysql.mysql_user:
-    name: root
-    host: localhost
-    password: "RoboShop@1"
-    login_user: root
-    login_password: "RoboShop@1"
-    check_implicit_admin: true
-    state: present
-
+    community.mysql.mysql_user:
+      name: root
+      host: localhost
+      password: "RoboShop@1"
+      login_user: root
+      login_password: "RoboShop@1"
+      check_implicit_admin: true
+      state: present
