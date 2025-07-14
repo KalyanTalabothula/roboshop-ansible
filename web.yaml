@@ -9,12 +9,12 @@
   - name: Enable Nginx module version 1.24
     ansible.builtin.command: dnf module enable nginx:1.24 -y
 
-  - name: Install Nginx web server
-    ansible.builtin.dnf:
+  - name: Install nginx web server
+    ansible.builtin.package:
     name: nginx
     state: present
 
-  - name: Enable and start Nginx
+  - name: Enable and start nginx
     ansible.builtin.service:
     name: nginx
     state: started
