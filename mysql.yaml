@@ -2,32 +2,62 @@
   hosts: mysql
   become: yes
   tasks:
+
   - name: install mysql-server
     ansible.builtin.package:
       name: mysql-server
       state: present
+
   - name: start and enable mysql-server
     ansible.builtin.service:
       name: mysqld
       state: started
       enabled: yes
-  - name: install pip dependies
+
+  - name: install pip dependencies
     ansible.builtin.pip:
       name: "{{ item }}"
       executable: pip3
     loop:
-    - PyMySQL
-    - cryptography
+      - PyMySQL
+      - cryptography
+
+  - name: Allow MySQL to listen on all interfaces
+    ansible.builtin.lineinfile:
+      path: /etc/my.cnf
+      regexp: '^bind-address'
+      line: 'bind-address=0.0.0.0'
+    notify: Restart MySQL
+
   - name: connect to database
     community.mysql.mysql_info:
       login_user: root
       login_password: RoboShop@1
       login_host: mysql.kalyanu.xyz
-    register: mysql_info 
+    register: mysql_info
     ignore_errors: true
+
   - name: print mysql_info
     ansible.builtin.debug:
       msg: "{{ mysql_info }}"
-  - name: setup mysql password 
+
+  - name: setup mysql password
     ansible.builtin.command: "mysql_secure_installation --set-root-pass RoboShop@1"
     when: mysql_info.failed is true
+
+  - name: Allow MySQL access for Ansible control node
+    community.mysql.mysql_user:
+      name: root
+      password: "RoboShop@1"
+      host: "172.31.2.234"   # Replace with your control node private IP
+      priv: "*.*:ALL,GRANT"
+      state: present
+      login_user: root
+      login_password: "RoboShop@1"
+      check_implicit_admin: true
+
+  handlers:
+    - name: Restart MySQL
+      ansible.builtin.service:
+        name: mysqld
+        state: restarted
