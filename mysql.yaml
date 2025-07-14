@@ -30,13 +30,16 @@
       owner: root
       group: root
 
-  - name: Create shipping MySQL user with remote access
+  - name: Create MySQL app user for remote access
     community.mysql.mysql_user:
       name: shipping
-      password: RoboShop@1
-      host: '%'
+      password: "RoboShop@1"
       priv: '*.*:ALL'
+      host: '%'
       state: present
+      login_user: root
+      login_password: "RoboShop@1"
+
 
 
 
