@@ -1,75 +1,18 @@
-- name: configure mysql-server
+- name: configure mysql component
   hosts: mysql
   become: yes
-
   tasks:
-    - name: install mysql-server
-      ansible.builtin.package:
-        name: mysql-server
-        state: present
+  - name: install mysql server
+    ansible.builtin.dnf:
+      name: mysql-server
+      state: installed
 
-    - name: start and enable mysql-server
-      ansible.builtin.service:
-        name: mysqld
-        state: started
-        enabled: yes
+  - name: start mysql server
+    ansible.builtin.service:
+      name: mysqld
+      state: started
+      enabled: yes
 
-    - name: install pip dependencies
-      ansible.builtin.pip:
-        name: "{{ item }}"
-        executable: pip3
-      loop:
-        - PyMySQL
-        - cryptography
 
-    - name: Allow MySQL to listen on all interfaces
-      ansible.builtin.lineinfile:
-        path: /etc/my.cnf
-        regexp: '^bind-address'
-        line: 'bind-address=0.0.0.0'
-        backup: yes
-      notify: Restart MySQL
-
-    - name: Grant MySQL access to Ansible control node
-      community.mysql.mysql_user:
-        name: root
-        password: "RoboShop@1"
-        host: "172.31.2.234"   # Your control node private IP
-        priv: "*.*:ALL,GRANT"
-        state: present
-        login_user: root
-        login_password: "RoboShop@1"
-        check_implicit_admin: true
-
-    - name: Grant MySQL access to Shipping server
-      community.mysql.mysql_user:
-        name: root
-        password: "RoboShop@1"
-        host: "172.31.9.202"   # Shipping server private IP
-        priv: "*.*:ALL,GRANT"
-        state: present
-        login_user: root
-        login_password: "RoboShop@1"
-        check_implicit_admin: true
-
-    - name: connect to database
-      community.mysql.mysql_info:
-        login_user: root
-        login_password: RoboShop@1
-        login_host: mysql.kalyanu.xyz
-      register: mysql_info
-      ignore_errors: true
-
-    - name: print mysql_info
-      ansible.builtin.debug:
-        msg: "{{ mysql_info }}"
-
-    - name: setup mysql password
-      ansible.builtin.command: "mysql_secure_installation --set-root-pass RoboShop@1"
-      when: mysql_info.failed is true
-
-  handlers:
-    - name: Restart MySQL
-      ansible.builtin.service:
-        name: mysqld
-        state: restarted
+  - name: setp root password
+    ansible.builtin.command: mysql_secure_installation --set-root-pass RoboShop@1
