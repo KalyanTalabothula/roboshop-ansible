@@ -1,4 +1,3 @@
-
 - name: configure mysql component
   hosts: mysql
   become: yes
@@ -34,7 +33,7 @@
     community.mysql.mysql_user:
       name: shipping
       password: "RoboShop@1"
-      priv: '*.*:ALL'
+      priv: '*cities.*:ALL'
       host: '%'
       state: present
       login_user: root
